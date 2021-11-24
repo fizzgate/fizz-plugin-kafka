@@ -1,0 +1,1 @@
+# fizz-kafka-plugin
