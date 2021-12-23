@@ -11,7 +11,7 @@
     </parent>
 
     <groupId>com.fizzgate</groupId>
-    <artifactId>fizz-kafka-plugin</artifactId>
+    <artifactId>fizz-plugin-kafka</artifactId>
     <version>1.0</version>
 
     <properties>
