@@ -63,6 +63,28 @@
             <artifactId>fizz-spring-boot-starter</artifactId>
             <version>2.3.4-beta2</version>
         </dependency>
+
+            <dependency>
+                <groupId>io.projectreactor.kafka</groupId>
+                <artifactId>reactor-kafka</artifactId>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.kafka</groupId>
+                <artifactId>spring-kafka</artifactId>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-test</artifactId>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-log4j2</artifactId>
+            </dependency>
+
     </dependencies>
 
     <url>https://github.com/wehotel/fizz-gateway-community</url>
