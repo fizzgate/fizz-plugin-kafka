@@ -22,11 +22,21 @@
 ---
 
 ###插件使用
-1. 在Fizz网关路由配置中选择使用本插件，并配置好kafka服务地址
-2. 请求返回后插件会将推送结果回写到响应头中, fizz-plugin-kafka-result写回推送结果，1表示推送成功, 0表示推送失败;如果推送成功,插件通过fizz-plugin-kafka-metadata回写kafka metadata信息
-3. 自定义发送topic:设置自定义header请求头fizz-plugin-kafka-topic传递kafka topic名称
-
----
+1. gateway项目pom文件中引入以下依赖
+        ```
+                <dependency>
+                        <groupId>com.fizzgate</groupId>
+                        <artifactId>替换实际的插件artifactId</artifactId>
+                        <version>替换实际的插件version</version>
+                </dependency>        
+        ```
+2. 管理后台导入以下SQL
+        ```
+                INSERT INTO `tb_plugin` (`fixed_config`, `eng_name`, `chn_name`, `config`, `order`, `instruction`, `type`, `create_user`, `create_dept`, `create_time`, `update_user`, `update_time`, `status`, `is_deleted`) VALUES 
+                ('', 'fizzPluginKafka', 'Kafka消息插件', '', 1, '插件使用说明', 2, NULL, NULL, NULL, NULL, NULL, 1, 0);
+3. 在Fizz网关路由配置中选择使用本插件，并配置好kafka服务地址
+4. 请求返回后插件会将推送结果回写到响应头中, fizz-plugin-kafka-result写回推送结果，1表示推送成功, 0表示推送失败;如果推送成功,插件通过fizz-plugin-kafka-metadata回写kafka metadata信息
+5. 自定义发送topic:设置自定义header请求头fizz-plugin-kafka-topic传递kafka topic名称
 
 ###后续版本开发列表
 1. 插件配置修改后立即生效
