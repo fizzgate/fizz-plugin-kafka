@@ -1,5 +1,23 @@
+/*
+ *  Copyright (C) 2021 the original author or authors.
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package we.plugin.message;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.stereotype.Component;
@@ -8,6 +26,11 @@ import reactor.kafka.sender.SenderOptions;
 import we.plugin.auth.ApiConfig;
 
 import javax.annotation.PreDestroy;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -19,6 +42,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class FizzKafkaProducerFactory {
     private final KafkaProperties kafkaProperties;
     private KafkaProducerHolder kafkaProducerHolder = new KafkaProducerHolder();
+    
+    private static String SERVER_ADDRESSES = "addresses";
 
     public FizzKafkaProducer get(ApiConfig apiConfig, Map<String, Object> config) {
         return kafkaProducerHolder.get(apiConfig, config);
@@ -30,18 +55,44 @@ public class FizzKafkaProducerFactory {
         private KafkaProducerHolder() {
         }
 
-        public FizzKafkaProducer get(ApiConfig apiConfig, Map<String, Object> config) {
-            FizzKafkaProducer fizzKafkaProducer = kafkaProducerMap.get(apiConfig.id);
+        @SuppressWarnings("unchecked")
+		public FizzKafkaProducer get(ApiConfig apiConfig, Map<String, Object> config) {
+        	Map<String, Object> kfconfig = new HashMap<>();
+        	if (config.containsKey(SERVER_ADDRESSES)) {
+        		String addrs = (String) config.get(SERVER_ADDRESSES);
+        		String[] arr = addrs.split(",");
+        		kfconfig.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, Arrays.asList(arr));
+        	}
+            Map<String, Object> producterConfig = mergeConcurrentHashMap(kfconfig, kafkaProperties.buildProducerProperties());
+            List<String> bootstrapServers = (List<String>) producterConfig.get(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG);
+            String id = genId(bootstrapServers);
+            
+            FizzKafkaProducer fizzKafkaProducer = kafkaProducerMap.get(id);
             if (fizzKafkaProducer == null || fizzKafkaProducer.isSenderUpdateRequired(config)) {
-                Map<String, Object> producterConfig = mergeConcurrentHashMap(config, kafkaProperties.buildProducerProperties());
                 forceInitImportantProperties(apiConfig, producterConfig);
                 KafkaSender<Long, String> kafkaSender = buildFizzKafkaSender(producterConfig);
                 fizzKafkaProducer = new FizzKafkaProducer(kafkaSender, config);
-                kafkaProducerMap.put(apiConfig.id, fizzKafkaProducer);
+                kafkaProducerMap.put(id, fizzKafkaProducer);
             }
             return fizzKafkaProducer;
         }
 
+    }
+    
+    private String genId(List<String> bootstrapServers) {
+    	if (CollectionUtils.isNotEmpty(bootstrapServers)) {
+    		Collections.sort(bootstrapServers);
+    		String s = null;
+    		for (String server : bootstrapServers) {
+    			if (s == null) {
+    				s = server;
+    			} else {
+    				s = s + "," + server;
+    			}
+			}
+    		return s;
+    	}
+    	return null;
     }
 
     private void forceInitImportantProperties(ApiConfig apiConfig, Map<String, Object> producterConfig) {
