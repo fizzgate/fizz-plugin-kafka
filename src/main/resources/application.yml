@@ -107,21 +107,16 @@ refresh-local-cache:
 
 spring.kafka.bootstrap-servers: 172.25.33.84:9092
 spring.kafka.producer.client-id: fizz-msg-producter
-#
-# 重试次数
+
 spring.kafka.producer.retries: 3
-# 应答级别:多少个分区副本备份完成时向生产者发送ack确认(可选0、1、all/-1)
+
 spring.kafka.producer.acks: 1
-# 批量大小
+
 spring.kafka.producer.batch-size: 16384
-# 提交延时
+
 spring.kafka.producer.properties.linger-ms: 0
 spring.kafka.max-block-ms: 3000
-# 当生产端积累的消息达到batch-size或接收到消息linger.ms后,生产者就会将消息提交给kafka
-# linger.ms为0表示每接收到一条消息就提交给kafka,这时候batch-size其实就没用了  ​
-# 生产端缓冲区大小
-#spring.kafka.producer.buffer-memory = 33554432
-# Kafka提供的序列化和反序列化类
+
 spring.kafka.producer.key-serializer: org.apache.kafka.common.serialization.LongSerializer
 
 spring.kafka.producer.value-serializer: org.apache.kafka.common.serialization.StringSerializer
