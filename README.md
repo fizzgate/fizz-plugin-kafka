@@ -28,7 +28,13 @@
         <dependency>
 	    <groupId>com.fizzgate</groupId>
             <artifactId>fizz-plugin-kafka</artifactId>
-            <version>1.1.1</version>
+            <version>2.7.1</version>
+            <exclusions>
+                <exclusion>
+		   <groupId>com.fizzgate</groupId>
+     		   <artifactId>fizz-spring-boot-starter</artifactId> 
+                </exclusion>
+            </exclusions>
         </dependency>     
     ```
 2. 管理后台导入以下SQL
