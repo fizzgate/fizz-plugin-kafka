@@ -31,7 +31,7 @@
             <version>2.7.1</version>
             <exclusions>
                 <exclusion>
-		   <groupId>com.fizzgate</groupId>
+	           <groupId>com.fizzgate</groupId>
      		   <artifactId>fizz-spring-boot-starter</artifactId> 
                 </exclusion>
             </exclusions>
